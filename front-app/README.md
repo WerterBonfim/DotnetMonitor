@@ -1,73 +1,138 @@
-# React + TypeScript + Vite
+# Garbage Collector Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Dashboard de monitoramento de Garbage Collector (GC) desenvolvido com React, Vite, TypeScript e Tauri.
 
-Currently, two official plugins are available:
+## 🚀 Tecnologias
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** com **Vite** e **TypeScript**
+- **Tauri** para aplicação desktop
+- **Tailwind CSS** para estilização
+- **Shadcn/ui** para componentes
+- **Recharts** para gráficos
+- **TanStack Query** para gerenciamento de estado e data fetching
+- **Lucide React** para ícones
 
-## React Compiler
+## 📦 Instalação
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Pré-requisitos
 
-## Expanding the ESLint configuration
+- Node.js 18+ e npm
+- Rust (para Tauri)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Instalar Rust
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Se você não tem o Rust instalado:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**Windows (PowerShell):**
+```powershell
+Invoke-WebRequest https://win.rustup.rs/x86_64 -OutFile rustup-init.exe
+.\rustup-init.exe
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**Linux/Mac:**
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
+
+### Instalar Dependências
+
+```bash
+npm install
+```
+
+## 🛠️ Desenvolvimento
+
+### Modo Desenvolvimento (Web)
+
+```bash
+npm run dev
+```
+
+A aplicação estará disponível em `http://localhost:5173`
+
+### Modo Desenvolvimento (Desktop com Tauri)
+
+```bash
+npm run tauri:dev
+```
+
+### Build para Produção
+
+```bash
+npm run build
+```
+
+### Build Desktop (Tauri)
+
+```bash
+npm run tauri:build
+```
+
+## 🎨 Temas
+
+O dashboard suporta três temas:
+
+- **Light**: Fundo claro (Zinc-50)
+- **Dark**: Fundo preto profundo (Zinc-950)
+- **Slate**: Tema azulado/cinza escuro (Slate-900)
+
+O tema pode ser alterado via seletor no header e é persistido no localStorage.
+
+## 📊 Funcionalidades
+
+- **Visão Geral**: Dashboard principal com métricas do GC
+- **Análise e Interpretação**: Interpretação automática do status do GC
+- **Histórico de Coletas**: Registro das coletas recentes
+- **Análise do Heap**: Análise detalhada do heap (em desenvolvimento)
+
+### Métricas Exibidas
+
+- Gerações (Gen 0, 1, 2): Tamanho, fragmentação e contagem de coletas
+- Large Object Heap (LOH): Tamanho e uso relativo
+- Pinned Object Heap (POH): Tamanho e objetos pinned
+- Estatísticas Gerais: Memória total, disponível, fragmentação e objetos pinned
+- Histórico de Métricas: Gráfico de linha com evolução temporal
+
+## 🔄 Auto-refresh
+
+O dashboard suporta atualização automática configurável:
+
+- Intervalos: 1s, 3s, 5s, 10s
+- Toggle para habilitar/desabilitar auto-refresh
+- Botão de atualização manual
+
+## 📱 Responsividade
+
+O dashboard é responsivo e otimizado para:
+
+- Notebooks 13 polegadas
+- Telas grandes (1920px, 2560px, 3440px)
+- Layout adaptativo com grid
+
+## 🏗️ Estrutura do Projeto
+
+```
+front-app/
+├── src/
+│   ├── components/       # Componentes React
+│   │   ├── ui/          # Componentes Shadcn/ui
+│   │   ├── dashboard/   # Componentes do dashboard
+│   │   └── layout/      # Componentes de layout
+│   ├── services/        # Serviços de API
+│   ├── types/           # Tipos TypeScript
+│   ├── hooks/           # Custom hooks
+│   ├── lib/             # Utilitários
+│   └── styles/          # Estilos globais
+├── src-tauri/           # Código Rust do Tauri
+└── public/              # Arquivos estáticos
+```
+
+## 📝 Notas
+
+- Atualmente, o projeto usa dados mock que variam aleatoriamente
+- A integração com a API .NET será implementada posteriormente
+- Consulte `docs/commit-prompt.md` para guia de commits
+
+## 📄 Licença
+
+Este projeto é privado.
