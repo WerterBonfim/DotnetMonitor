@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
-import { Package, Pin } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Package, Pin, Info } from 'lucide-react';
 import { formatBytes, formatPercent } from '../../lib/utils';
+import { HeapDetailsModal } from '../gc/HeapDetailsModal';
 
 interface SpecialHeapsProps {
   lohSizeBytes: number;
@@ -17,18 +20,33 @@ export function SpecialHeaps({
   totalMemoryBytes,
   pinnedObjectsCount,
 }: SpecialHeapsProps) {
+  const [lohModalOpen, setLohModalOpen] = useState(false);
+  const [pohModalOpen, setPohModalOpen] = useState(false);
+  
   const lohPercentage = totalMemoryBytes > 0 ? (lohSizeBytes / totalMemoryBytes) * 100 : 0;
   const pohPercentage = totalMemoryBytes > 0 ? (pohSizeBytes / totalMemoryBytes) * 100 : 0;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Package className="h-5 w-5 text-amber-700 dark:text-amber-500" />
-            <CardTitle className="text-lg">Large Object Heap (LOH)</CardTitle>
-          </div>
-        </CardHeader>
+    <>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Package className="h-5 w-5 text-amber-700 dark:text-amber-500" />
+                <CardTitle className="text-lg">Large Object Heap (LOH)</CardTitle>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-5 w-5 text-muted-foreground hover:text-foreground"
+                onClick={() => setLohModalOpen(true)}
+                title="Informações sobre LOH"
+              >
+                <Info className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardHeader>
         <CardContent className="space-y-3">
           <div>
             <div className="text-sm text-muted-foreground">Tamanho</div>
@@ -47,15 +65,26 @@ export function SpecialHeaps({
             <Badge variant="success">OK</Badge>
           </div>
         </CardContent>
-      </Card>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Pin className="h-5 w-5 text-red-500" />
-            <CardTitle className="text-lg">Pinned Object Heap (POH)</CardTitle>
-          </div>
-        </CardHeader>
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Pin className="h-5 w-5 text-red-500" />
+                <CardTitle className="text-lg">Pinned Object Heap (POH)</CardTitle>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-5 w-5 text-muted-foreground hover:text-foreground"
+                onClick={() => setPohModalOpen(true)}
+                title="Informações sobre POH"
+              >
+                <Info className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardHeader>
         <CardContent className="space-y-3">
           <div>
             <div className="text-sm text-muted-foreground">Tamanho</div>
@@ -78,7 +107,25 @@ export function SpecialHeaps({
             <Badge variant="success">OK</Badge>
           </div>
         </CardContent>
-      </Card>
-    </div>
+        </Card>
+      </div>
+      
+      <HeapDetailsModal
+        type="LOH"
+        sizeBytes={lohSizeBytes}
+        totalMemoryBytes={totalMemoryBytes}
+        open={lohModalOpen}
+        onOpenChange={setLohModalOpen}
+      />
+      
+      <HeapDetailsModal
+        type="POH"
+        sizeBytes={pohSizeBytes}
+        totalMemoryBytes={totalMemoryBytes}
+        pinnedObjectsCount={pinnedObjectsCount}
+        open={pohModalOpen}
+        onOpenChange={setPohModalOpen}
+      />
+    </>
   );
 }

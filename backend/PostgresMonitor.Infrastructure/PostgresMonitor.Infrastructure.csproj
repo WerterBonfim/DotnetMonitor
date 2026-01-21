@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LiteDB" Version="5.0.21" />
+    <PackageReference Include="Npgsql" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="3.1.455904" />
+    <PackageReference Include="Microsoft.Diagnostics.NETCore.Client" Version="0.2.410101" />
+    <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="3.1.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PostgresMonitor.Core\PostgresMonitor.Core.csproj" />
+    <ProjectReference Include="..\PostgresMonitor.ServiceDefaults\PostgresMonitor.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -58,6 +58,7 @@ export function Header({
           >
             <option value={1000}>1s</option>
             <option value={3000}>3s</option>
+            <option value={3000}>3s</option>
             <option value={5000}>5s</option>
             <option value={10000}>10s</option>
           </select>

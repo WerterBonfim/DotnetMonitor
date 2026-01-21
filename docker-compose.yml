@@ -1,0 +1,17 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: postgresmonitor-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: postgresmonitor
+    ports:
+      - "27017:27017"
+    command: mongod --wiredTigerCacheSizeGB=2
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:

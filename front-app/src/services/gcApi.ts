@@ -1,116 +1,159 @@
-import { GCStats, GenerationInfo, GCCollectionEvent, GCInterpretation } from '../types/gc';
+import axios, { AxiosError } from 'axios';
+import type { GCStats } from '../types/gc';
+import { toast } from '../components/ui/toaster';
 
-function randomVariation(base: number, variationPercent: number = 10): number {
-  const variation = base * (variationPercent / 100);
-  return base + (Math.random() * 2 - 1) * variation;
-}
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5179',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 30000, // 30 segundos
+});
 
-function generateGenerationInfo(baseSize: number, baseFragmentation: number, baseCollections: number): GenerationInfo {
-  return {
-    sizeAfterBytes: Math.max(0, randomVariation(baseSize, 15)),
-    fragmentedBytes: Math.max(0, randomVariation(baseSize * (baseFragmentation / 100), 20)),
-    fragmentationPercent: Math.max(0, Math.min(100, randomVariation(baseFragmentation, 15))),
-    collectionCount: Math.max(0, baseCollections + Math.floor(Math.random() * 3)),
-  };
-}
+// Interceptor para capturar erros de conexão com MongoDB
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    const errorData = error.response?.data as any;
+    const errorMessage = errorData?.message || errorData?.detail || error.message || '';
+    const errorString = JSON.stringify(errorData || error.message || '').toLowerCase();
 
-function generateHealthStatus(fragmentation: number): 'Healthy' | 'Warning' | 'Critical' {
-  if (fragmentation < 20) return 'Healthy';
-  if (fragmentation < 40) return 'Warning';
-  return 'Critical';
-}
+    // Verifica se é erro de timeout ou conexão relacionado ao MongoDB
+    const isTimeoutError = 
+      error.code === 'ECONNABORTED' || 
+      error.code === 'ETIMEDOUT' || 
+      error.message?.toLowerCase().includes('timeout') ||
+      errorString.includes('timeoutexception');
 
-function generateInterpretation(healthStatus: string, fragmentation: number): GCInterpretation {
-  const recommendations: string[] = [];
-  const issues: string[] = [];
+    const isMongoDBError = 
+      errorString.includes('mongodb') ||
+      errorString.includes('mongo') ||
+      errorString.includes('compositeserverselector') ||
+      errorString.includes('cluster state') ||
+      errorString.includes('server selector');
 
-  if (fragmentation > 30) {
-    issues.push(`Fragmentação elevada: ${fragmentation.toFixed(2)}%`);
-    recommendations.push('Considere reduzir alocações de objetos grandes');
-    recommendations.push('Avalie o uso de object pooling para objetos frequentes');
+    if (isTimeoutError || isMongoDBError) {
+      toast({
+        title: 'Erro de Conexão com MongoDB',
+        description: 'Não foi possível conectar ao banco de dados MongoDB para obter as credenciais e outras informações. Verifique se o MongoDB está rodando e acessível.',
+        variant: 'destructive',
+        duration: 10000,
+      });
+    } else if (error.code === 'ECONNREFUSED' || error.message?.includes('Network Error')) {
+      toast({
+        title: 'Erro de Conexão',
+        description: 'Não foi possível conectar ao servidor. Verifique se o backend está rodando e se o MongoDB está acessível.',
+        variant: 'destructive',
+        duration: 8000,
+      });
+    } else if (error.response?.status === 500 && isMongoDBError) {
+      toast({
+        title: 'Erro no Banco de Dados',
+        description: 'Não foi possível conectar ao banco de dados MongoDB. Verifique se o MongoDB está rodando e configurado corretamente.',
+        variant: 'destructive',
+        duration: 8000,
+      });
+    }
+
+    return Promise.reject(error);
   }
+);
 
-  if (fragmentation > 50) {
-    issues.push('Fragmentação crítica detectada');
-    recommendations.push('Execute uma coleta completa (GC.Collect()) se necessário');
-    recommendations.push('Revise padrões de alocação de memória');
-  }
-
-  if (fragmentation < 20) {
-    recommendations.push('GC está funcionando de forma eficiente');
-  }
-
-  return {
-    status: healthStatus,
-    description: `Status atual: ${healthStatus}. Fragmentação geral: ${fragmentation.toFixed(2)}%`,
-    recommendations: recommendations.length > 0 ? recommendations : ['Nenhuma ação necessária no momento'],
-    currentIssues: issues,
-  };
+export interface DotNetProcess {
+  processId: number;
+  processName: string;
+  mainModulePath: string | null;
+  workingSet64: number;
+  startTime: string;
 }
 
-function generateRecentCollections(): GCCollectionEvent[] {
-  const collections: GCCollectionEvent[] = [];
-  const now = Date.now();
-  
-  for (let i = 0; i < 5; i++) {
-    const timestamp = new Date(now - (i * 30000)).toISOString();
-    const generation = Math.floor(Math.random() * 3);
-    const heapSize = randomVariation(30 * 1024 * 1024, 20);
-    const memoryFreed = randomVariation(heapSize * 0.3, 30);
-    
-    collections.push({
-      generation,
-      timestamp,
-      heapSizeBytes: heapSize,
-      memoryFreedBytes: memoryFreed,
-    });
-  }
-  
-  return collections.reverse();
+export async function getDotNetProcesses(): Promise<DotNetProcess[]> {
+  const response = await apiClient.get<DotNetProcess[]>('/api/gc/processes');
+  return response.data;
 }
 
-let baseGen0 = 3.5 * 1024 * 1024;
-let baseGen1 = 2.4 * 1024 * 1024;
-let baseGen2 = 6.8 * 1024 * 1024;
-let baseLOH = 17.8 * 1024 * 1024;
-let baseTotal = 36.9 * 1024 * 1024;
+export async function getGCMetrics(processId: number): Promise<GCStats> {
+  // #region agent log
+  fetch('http://127.0.0.1:7246/ingest/94f82386-1b3b-4287-9cae-08e92f387d31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'gcApi.ts:75',message:'getGCMetrics called',data:{processId},timestamp:Date.now(),sessionId:'debug-session',runId:'run3',hypothesisId:'A'})}).catch(()=>{});
+  // #endregion
+  try {
+    const response = await apiClient.get(`/api/gc/metrics/${processId}`);
+    const data = response.data;
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/94f82386-1b3b-4287-9cae-08e92f387d31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'gcApi.ts:79',message:'API response received',data:{hasData:!!data,hasTimeInGC:!!data?.timeInGCPercent,hasCollectionRate:!!data?.collectionRatePerMinute,keys:data?Object.keys(data):[],rawData:JSON.stringify(data).substring(0,500)},timestamp:Date.now(),sessionId:'debug-session',runId:'run3',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
 
-export async function getGCMetrics(): Promise<GCStats> {
-  // Simula variação gradual dos dados
-  baseGen0 = randomVariation(baseGen0, 5);
-  baseGen1 = randomVariation(baseGen1, 5);
-  baseGen2 = randomVariation(baseGen2, 5);
-  baseLOH = randomVariation(baseLOH, 5);
-  baseTotal = baseGen0 + baseGen1 + baseGen2 + baseLOH;
-
-  const gen0 = generateGenerationInfo(baseGen0, 7.39, 16);
-  const gen1 = generateGenerationInfo(baseGen1, 5.02, 9);
-  const gen2 = generateGenerationInfo(baseGen2, 14.27, 8);
-
-  const lohSizeBytes = Math.max(0, randomVariation(baseLOH, 10));
-  const pohSizeBytes = 320 + Math.floor(Math.random() * 100);
-  const totalMemoryBytes = gen0.sizeAfterBytes + gen1.sizeAfterBytes + gen2.sizeAfterBytes + lohSizeBytes;
-  const availableMemoryBytes = 31.84 * 1024 * 1024 * 1024;
-  const pinnedObjectsCount = 5 + Math.floor(Math.random() * 3);
-
-  const overallFragmentation = (gen0.fragmentationPercent + gen1.fragmentationPercent + gen2.fragmentationPercent) / 3;
-  const healthStatus = generateHealthStatus(overallFragmentation);
-  const interpretation = generateInterpretation(healthStatus, overallFragmentation);
-  const recentCollections = generateRecentCollections();
-
-  return {
-    gen0,
-    gen1,
-    gen2,
-    lohSizeBytes,
-    pohSizeBytes,
-    totalMemoryBytes,
-    availableMemoryBytes,
-    pinnedObjectsCount,
-    overallFragmentationPercent: overallFragmentation,
-    healthStatus,
-    interpretation,
-    recentCollections,
-    timestamp: new Date().toISOString(),
-  };
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/94f82386-1b3b-4287-9cae-08e92f387d31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'gcApi.ts:86',message:'Before creating result object',data:{hasData:!!data,dataKeys:data?Object.keys(data):[],hasCollectionRate:!!data?.collectionRatePerMinute,collectionRateValue:data?.collectionRatePerMinute},timestamp:Date.now(),sessionId:'debug-session',runId:'run3',hypothesisId:'L'})}).catch(()=>{});
+    // #endregion
+    const result = {
+    gen0: {
+      sizeAfterBytes: data.gen0.sizeAfterBytes,
+      fragmentedBytes: data.gen0.fragmentedBytes,
+      fragmentationPercent: data.gen0.fragmentationPercent,
+      collectionCount: data.gen0.collectionCount,
+    },
+    gen1: {
+      sizeAfterBytes: data.gen1.sizeAfterBytes,
+      fragmentedBytes: data.gen1.fragmentedBytes,
+      fragmentationPercent: data.gen1.fragmentationPercent,
+      collectionCount: data.gen1.collectionCount,
+    },
+    gen2: {
+      sizeAfterBytes: data.gen2.sizeAfterBytes,
+      fragmentedBytes: data.gen2.fragmentedBytes,
+      fragmentationPercent: data.gen2.fragmentationPercent,
+      collectionCount: data.gen2.collectionCount,
+    },
+    lohSizeBytes: data.lohSizeBytes,
+    pohSizeBytes: data.pohSizeBytes,
+    totalMemoryBytes: data.totalMemoryBytes,
+    availableMemoryBytes: data.availableMemoryBytes,
+    pinnedObjectsCount: data.pinnedObjectsCount,
+    overallFragmentationPercent: data.overallFragmentationPercent,
+    healthStatus: data.healthStatus as 'Healthy' | 'Warning' | 'Critical',
+    interpretation: {
+      status: data.interpretation.status,
+      description: data.interpretation.description,
+      recommendations: data.interpretation.recommendations,
+      currentIssues: data.interpretation.currentIssues,
+    },
+    recentCollections: data.recentCollections.map((c: any) => ({
+      generation: c.generation,
+      timestamp: c.timestamp,
+      heapSizeBytes: c.heapSizeBytes,
+      memoryFreedBytes: c.memoryFreedBytes,
+    })),
+    timestamp: data.timestamp,
+    timeInGCPercent: data.timeInGCPercent ?? 0,
+    gcPauseTimeTotalMs: data.gcPauseTimeTotalMs ?? 0,
+    gcPauseTimeAverageMs: data.gcPauseTimeAverageMs ?? 0,
+    collectionRatePerMinute: (() => {
+      // #region agent log
+      fetch('http://127.0.0.1:7246/ingest/94f82386-1b3b-4287-9cae-08e92f387d31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'gcApi.ts:128',message:'Processing collectionRatePerMinute',data:{hasCollectionRate:!!data.collectionRatePerMinute,collectionRateType:typeof data.collectionRatePerMinute,collectionRateValue:data.collectionRatePerMinute},timestamp:Date.now(),sessionId:'debug-session',runId:'run3',hypothesisId:'M'})}).catch(()=>{});
+      // #endregion
+      if (!data.collectionRatePerMinute) {
+        return { gen0: 0, gen1: 0, gen2: 0 };
+      }
+      return {
+        gen0: data.collectionRatePerMinute.gen0 ?? 0,
+        gen1: data.collectionRatePerMinute.gen1 ?? 0,
+        gen2: data.collectionRatePerMinute.gen2 ?? 0,
+      };
+    })(),
+    allocationRateBytesPerSecond: data.allocationRateBytesPerSecond ?? 0,
+    memoryCommittedSizeBytes: data.memoryCommittedSizeBytes ?? 0,
+    heapSizeAfterGen2GC: data.heapSizeAfterGen2GC ?? 0,
+    gen2CollectionFrequencyPerHour: data.gen2CollectionFrequencyPerHour ?? 0,
+    };
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/94f82386-1b3b-4287-9cae-08e92f387d31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'gcApi.ts:149',message:'getGCMetrics result created successfully',data:{hasTimeInGC:typeof result.timeInGCPercent==='number',hasCollectionRate:!!result.collectionRatePerMinute,collectionRateGen0:result.collectionRatePerMinute?.gen0},timestamp:Date.now(),sessionId:'debug-session',runId:'run3',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
+    return result;
+  } catch (error) {
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/94f82386-1b3b-4287-9cae-08e92f387d31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'gcApi.ts:153',message:'getGCMetrics error',data:{error:error instanceof Error?error.message:String(error),stack:error instanceof Error?error.stack:undefined},timestamp:Date.now(),sessionId:'debug-session',runId:'run3',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
+    throw error;
+  }
 }

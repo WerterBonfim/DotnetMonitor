@@ -1,5 +1,5 @@
 import { AlertTriangle, CheckCircle, XCircle, Folder } from 'lucide-react';
-import { GCStats } from '../../types/gc';
+import type { GCStats } from '../../types/gc';
 import { cn } from '../../lib/utils';
 
 interface HealthBannerProps {

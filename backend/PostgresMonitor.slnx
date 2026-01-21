@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="PostgresMonitor.Api/PostgresMonitor.Api.csproj" />
+  <Project Path="PostgresMonitor.Host/PostgresMonitor.Host.csproj" />
+  <Project Path="PostgresMonitor.Core/PostgresMonitor.Core.csproj" />
+  <Project Path="PostgresMonitor.Infrastructure/PostgresMonitor.Infrastructure.csproj" />
+  <Project Path="PostgresMonitor.ServiceDefaults/PostgresMonitor.ServiceDefaults.csproj" />
+</Solution>

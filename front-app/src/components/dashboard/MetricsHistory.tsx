@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useEffect, useState } from 'react';
-import { GCStats } from '../../types/gc';
+import type { GCStats } from '../../types/gc';
 
 interface MetricsHistoryProps {
   stats: GCStats | undefined;

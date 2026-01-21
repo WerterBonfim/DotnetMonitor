@@ -1,0 +1,16 @@
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\bin\Debug\net10.0\PostgresMonitor.Core.deps.json
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\bin\Debug\net10.0\PostgresMonitor.Core.dll
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\bin\Debug\net10.0\PostgresMonitor.Core.pdb
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\bin\Debug\net10.0\PostgresMonitor.ServiceDefaults.dll
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\bin\Debug\net10.0\PostgresMonitor.ServiceDefaults.pdb
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\obj\Debug\net10.0\PostgresMonitor.Core.csproj.AssemblyReference.cache
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\obj\Debug\net10.0\PostgresMonitor.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\obj\Debug\net10.0\PostgresMonitor.Core.AssemblyInfoInputs.cache
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\obj\Debug\net10.0\PostgresMonitor.Core.AssemblyInfo.cs
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\obj\Debug\net10.0\PostgresMonitor.Core.csproj.CoreCompileInputs.cache
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\obj\Debug\net10.0\PostgresMonitor.Core.sourcelink.json
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\obj\Debug\net10.0\Postgres.2804F0F4.Up2Date
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\obj\Debug\net10.0\PostgresMonitor.Core.dll
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\obj\Debug\net10.0\refint\PostgresMonitor.Core.dll
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\obj\Debug\net10.0\PostgresMonitor.Core.pdb
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.Core\obj\Debug\net10.0\ref\PostgresMonitor.Core.dll

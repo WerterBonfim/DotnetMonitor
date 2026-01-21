@@ -1,0 +1,13 @@
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.ServiceDefaults\bin\Debug\net10.0\PostgresMonitor.ServiceDefaults.deps.json
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.ServiceDefaults\bin\Debug\net10.0\PostgresMonitor.ServiceDefaults.dll
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.ServiceDefaults\bin\Debug\net10.0\PostgresMonitor.ServiceDefaults.pdb
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.ServiceDefaults\obj\Debug\net10.0\PostgresMonitor.ServiceDefaults.csproj.AssemblyReference.cache
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.ServiceDefaults\obj\Debug\net10.0\PostgresMonitor.ServiceDefaults.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.ServiceDefaults\obj\Debug\net10.0\PostgresMonitor.ServiceDefaults.AssemblyInfoInputs.cache
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.ServiceDefaults\obj\Debug\net10.0\PostgresMonitor.ServiceDefaults.AssemblyInfo.cs
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.ServiceDefaults\obj\Debug\net10.0\PostgresMonitor.ServiceDefaults.csproj.CoreCompileInputs.cache
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.ServiceDefaults\obj\Debug\net10.0\PostgresMonitor.ServiceDefaults.sourcelink.json
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.ServiceDefaults\obj\Debug\net10.0\PostgresMonitor.ServiceDefaults.dll
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.ServiceDefaults\obj\Debug\net10.0\refint\PostgresMonitor.ServiceDefaults.dll
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.ServiceDefaults\obj\Debug\net10.0\PostgresMonitor.ServiceDefaults.pdb
+C:\Users\werter-dev\dev\projetos\DotnetMonitor\backend\PostgresMonitor.ServiceDefaults\obj\Debug\net10.0\ref\PostgresMonitor.ServiceDefaults.dll
