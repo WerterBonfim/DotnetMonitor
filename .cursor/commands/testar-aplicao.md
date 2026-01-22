@@ -1,1 +1,0 @@
-Rode o projeto backend e realize os testes pra ve se tudo está fucionando corretamente

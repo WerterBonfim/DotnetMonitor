@@ -1,0 +1,27 @@
+# Cursor IDE
+.cursor/
+
+# JetBrains IDEs
+.idea/
+
+# Visual Studio
+.vs/
+
+# Build outputs
+**/bin/
+**/obj/
+**/Debug/
+**/Release/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
