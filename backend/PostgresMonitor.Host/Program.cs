@@ -2,7 +2,8 @@ using Aspire.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var api = builder.AddProject("api", "../PostgresMonitor.Api/PostgresMonitor.Api.csproj");
+var api = builder.AddProject("api", "../PostgresMonitor.Api/PostgresMonitor.Api.csproj")
+    .WithEnvironment("PORT", "5557");
 
 var frontend = builder.AddExecutable("frontend", "npm", "../../front-app", "run", "dev", "--", "--host", "0.0.0.0")
     .WithHttpEndpoint(port: 5173, name: "http", env: "PORT")
