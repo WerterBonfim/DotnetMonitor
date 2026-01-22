@@ -18,25 +18,35 @@ using PostgresMonitor.Infrastructure.Logging;
 using PostgresMonitor.Infrastructure.PostgreSQL;
 using PostgresMonitor.Infrastructure.Repositories;
 using PostgresMonitor.Infrastructure.Services;
-
 // Ler porta da variável de ambiente ou usar padrão
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 var portNumber = int.Parse(port);
+var isRunningUnderAspire = Environment.GetEnvironmentVariable("ASPIRE_RESOURCE_SERVICE_ENDPOINT_URL") != null;
 
-// Verificar se a porta está disponível
-if (!PortHelper.IsPortAvailable(portNumber))
+// Verificar se a porta está disponível APENAS se não estiver rodando sob Aspire
+// O Aspire gerencia automaticamente a alocação de portas
+var isAvailable = true;
+if (!isRunningUnderAspire)
 {
-    Console.Error.WriteLine($"ERRO: A porta {port} já está em uso. Verifique se há outra instância do aplicativo rodando.");
-    Console.Error.WriteLine($"Tente usar uma porta diferente definindo a variável de ambiente PORT.");
-    Environment.Exit(1);
-}
+    isAvailable = PortHelper.IsPortAvailable(portNumber);
 
-var urls = $"http://localhost:{port}";
+    if (!isAvailable)
+    {
+        Console.Error.WriteLine($"ERRO: A porta {port} já está em uso. Verifique se há outra instância do aplicativo rodando.");
+        Console.Error.WriteLine($"Tente usar uma porta diferente definindo a variável de ambiente PORT.");
+        Environment.Exit(1);
+    }
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar URL do servidor
-builder.WebHost.UseUrls(urls);
+// Configurar URL do servidor APENAS se não estiver rodando sob Aspire
+// O Aspire gerencia as URLs automaticamente através do proxy de porta (dcpctrl)
+if (!isRunningUnderAspire)
+{
+    var urls = $"http://localhost:{port}";
+    builder.WebHost.UseUrls(urls);
+}
 
 builder.AddServiceDefaults();
 
