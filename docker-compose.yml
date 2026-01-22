@@ -1,17 +1,21 @@
 services:
-  mongodb:
-    image: mongo:7
-    container_name: postgresmonitor-mongo
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgresmonitor-postgres
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
-      MONGO_INITDB_DATABASE: postgresmonitor
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgresmonitor
     ports:
-      - "27017:27017"
-    command: mongod --wiredTigerCacheSizeGB=2
+      - "5432:5432"
     volumes:
-      - mongodb_data:/data/db
+      - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
-  mongodb_data:
+  postgres_data:
