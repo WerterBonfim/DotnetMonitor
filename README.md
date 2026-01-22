@@ -56,6 +56,11 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 ## 🛠️ Como Rodar em Modo Desenvolvimento
 
+> **📌 Portas Padrão:**
+> - **Backend API:** `http://localhost:5000`
+> - **Frontend (Vite):** `http://localhost:5173`
+> - **PostgreSQL (Docker):** `localhost:5432`
+
 ### Opção 1: Via IDE (Rider/Visual Studio)
 
 1. Abra o projeto `backend/PostgresMonitor.Host/PostgresMonitor.Host.csproj` na sua IDE
@@ -72,7 +77,9 @@ cd backend/PostgresMonitor.Api
 dotnet run
 ```
 
-O backend estará disponível em `http://localhost:5000` (ou na porta configurada pela variável de ambiente `PORT`).
+O backend estará disponível em **`http://localhost:5000`** (ou na porta configurada pela variável de ambiente `PORT`).
+
+**Porta padrão do backend:** `5000`
 
 #### Frontend
 
@@ -84,7 +91,9 @@ npm install
 npm run dev
 ```
 
-O frontend estará disponível em `http://localhost:5173`.
+O frontend estará disponível em **`http://localhost:5173`**.
+
+**Porta padrão do frontend:** `5173`
 
 #### Frontend com Tauri (Desktop)
 
@@ -201,8 +210,18 @@ O arquivo terá o nome baseado na configuração do Tauri (geralmente algo como 
 
 ### Variáveis de Ambiente
 
-- `PORT`: Porta do backend (padrão: 5000)
-- `VITE_API_BASE_URL`: URL base da API no frontend (padrão: http://localhost:5000)
+#### Backend
+- `PORT`: Porta do backend (padrão: **5000**)
+
+#### Frontend
+- `PORT`: Porta do frontend Vite (padrão: **5173**)
+- `VITE_API_BASE_URL`: URL base da API no frontend (padrão: `http://localhost:5000`)
+
+### Portas Padrão
+
+- **Backend API:** `http://localhost:5000`
+- **Frontend (Vite):** `http://localhost:5173`
+- **PostgreSQL (Docker):** `localhost:5432`
 
 ### Configuração do LiteDB
 
@@ -233,7 +252,11 @@ Se você receber um erro indicando que a porta está em uso:
 2. Use uma porta diferente definindo a variável de ambiente `PORT`
 3. No Windows, você pode verificar qual processo está usando a porta:
    ```powershell
+   # Verificar porta do backend (5000)
    netstat -ano | findstr :5000
+   
+   # Verificar porta do frontend (5173)
+   netstat -ano | findstr :5173
    ```
 
 ### Backend não inicia
@@ -244,9 +267,10 @@ Se você receber um erro indicando que a porta está em uso:
 
 ### Frontend não conecta ao backend
 
-1. Verifique se o backend está rodando
-2. Confirme que a variável `VITE_API_BASE_URL` está correta
-3. Verifique os logs do backend
+1. Verifique se o backend está rodando na porta **5000** (ou na porta configurada)
+2. Confirme que a variável `VITE_API_BASE_URL` está correta (padrão: `http://localhost:5000`)
+3. Verifique se o frontend está rodando na porta **5173**
+4. Verifique os logs do backend usando o botão "Ver Logs" no rodapé da aplicação
 
 ## 📝 Notas
 
