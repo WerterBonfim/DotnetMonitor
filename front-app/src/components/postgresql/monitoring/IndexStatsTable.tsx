@@ -4,12 +4,13 @@ import { Badge } from '../../ui/badge';
 import { Input } from '../../ui/input';
 import { StatusBadge } from './StatusBadge';
 import { IndexDetailsModal } from './IndexDetailsModal';
-import { Search, Filter, Eye } from 'lucide-react';
+import { Search, Eye } from 'lucide-react';
 import type { IndexStats } from '../../../types/postgresql';
 import { formatBytes } from '../../../lib/utils';
 
 interface IndexStatsTableProps {
   indexStats: IndexStats[];
+  connectionId?: string;
 }
 
 type FilterStatus = 'all' | 'unused' | 'low_usage' | 'normal' | 'high_usage';
@@ -145,7 +146,7 @@ export function IndexStatsTable({ indexStats, connectionId }: IndexStatsTablePro
         </div>
       </div>
 
-      {selectedIndex && (
+      {selectedIndex && connectionId && (
         <IndexDetailsModal
           connectionId={connectionId}
           schemaName={selectedIndex.schemaName}

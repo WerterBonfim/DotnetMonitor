@@ -2,9 +2,8 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Info, AlertTriangle } from 'lucide-react';
-import { formatPercent, getThresholdBgColor, getThresholdColor } from '../../lib/utils';
+import { formatPercent, getThresholdColor } from '../../lib/utils';
 import { MetricInfoModal, type MetricInfo } from './MetricInfoModal';
-import { Progress } from '../ui/progress';
 
 interface TimeInGCCardProps {
   timeInGCPercent: number;

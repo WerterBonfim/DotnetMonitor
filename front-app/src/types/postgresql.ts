@@ -354,3 +354,12 @@ export interface QueryHistory {
   impactLevel: 'low' | 'medium' | 'high' | 'critical';
   impactDescription: string;
 }
+
+export interface IndexTypeInfo {
+  type: string;
+  name: string;
+  description: string;
+  useCases: string[];
+  advantages: string[];
+  disadvantages: string[];
+}

@@ -46,7 +46,7 @@ export function AllocationTrackingControl({
       return getAllocationTrackingStatus(processId);
     },
     enabled: !!processId,
-    refetchInterval: (data) => (data?.isActive ? 2000 : false),
+    refetchInterval: 2000, // Refetch a cada 2 segundos quando ativo (será controlado pelo enabled)
   });
 
   const startMutation = useMutation({

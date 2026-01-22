@@ -1,5 +1,4 @@
 import { Card } from '../../ui/card';
-import { Badge } from '../../ui/badge';
 import type { MemoryConfig } from '../../../types/postgresql';
 import { formatBytes } from '../../../lib/utils';
 

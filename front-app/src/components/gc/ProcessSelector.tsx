@@ -15,11 +15,21 @@ interface ProcessSelectorProps {
 export function ProcessSelector({ selectedProcessId, onProcessSelect }: ProcessSelectorProps) {
   const [searchTerm, setSearchTerm] = useState('');
   
-  const { data: processes = [], isLoading, refetch } = useQuery({
+  const { data: processes = [], isLoading, refetch } = useQuery<DotNetProcess[]>({
     queryKey: ['dotnet-processes'],
     queryFn: getDotNetProcesses,
     refetchInterval: 10000, // Atualiza a cada 10 segundos
+    staleTime: 0, // Sempre considera os dados como stale para forçar refetch
+    gcTime: 0, // Não mantém cache para garantir dados sempre atualizados (React Query v5)
   });
+  
+  // #region agent log
+  const handleRefetch = () => {
+    const processCount = Array.isArray(processes) ? processes.length : 0;
+    fetch('http://127.0.0.1:7246/ingest/94f82386-1b3b-4287-9cae-08e92f387d31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ProcessSelector.tsx:handleRefetch',message:'Botão refresh clicado',data:{currentProcessCount:processCount},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'L'})}).catch(()=>{});
+    refetch();
+  };
+  // #endregion
 
   // Filtra processos baseado no termo de busca
   const filteredProcesses = useMemo(() => {
@@ -57,7 +67,7 @@ export function ProcessSelector({ selectedProcessId, onProcessSelect }: ProcessS
           <div className="text-center text-muted-foreground py-4">
             Nenhum processo .NET encontrado
           </div>
-          <Button onClick={() => refetch()} variant="outline" className="w-full">
+          <Button onClick={handleRefetch} variant="outline" className="w-full">
             <RefreshCw className="mr-2 h-4 w-4" />
             Atualizar
           </Button>
@@ -71,7 +81,7 @@ export function ProcessSelector({ selectedProcessId, onProcessSelect }: ProcessS
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Selecione um Processo .NET</CardTitle>
-          <Button onClick={() => refetch()} variant="ghost" size="sm">
+          <Button onClick={handleRefetch} variant="ghost" size="sm">
             <RefreshCw className="h-4 w-4" />
           </Button>
         </div>

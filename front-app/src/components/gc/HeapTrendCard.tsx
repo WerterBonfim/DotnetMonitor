@@ -49,7 +49,8 @@ export function HeapTrendCard({
 
   // Por enquanto, mostramos apenas o valor atual
   // Em uma implementação completa, isso seria um gráfico de linha com histórico
-  const trend = 'stable'; // stable, increasing, decreasing - seria calculado com histórico
+  type TrendType = 'stable' | 'increasing' | 'decreasing';
+  const trend: TrendType = 'stable' as TrendType; // seria calculado com histórico
 
   const TrendIcon = trend === 'increasing' ? TrendingUp :
                     trend === 'decreasing' ? TrendingDown :

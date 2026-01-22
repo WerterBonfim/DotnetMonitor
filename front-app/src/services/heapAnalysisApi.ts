@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { HeapAnalysis, TypeMemoryInfo, TypeCountInfo, LargeObjectInfo, NamespaceStats, ArrayElementStats, ThreadAnalysis, HeapSummary, AllocationOrigin } from '../types/gc';
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5179',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -122,7 +122,7 @@ export async function getLatestHeapAnalysis(processId: number, topN: number = 10
   }
 }
 
-export async function getHeapAnalysisHistory(processId: number, limit: number = 10): Promise<HeapAnalysis[]> {
+export async function getHeapAnalysisHistory(processId: number, _limit: number = 10): Promise<HeapAnalysis[]> {
   // Por enquanto, retorna apenas a análise mais recente
   // Pode ser implementado histórico no futuro se necessário
   const analysis = await getLatestHeapAnalysis(processId);

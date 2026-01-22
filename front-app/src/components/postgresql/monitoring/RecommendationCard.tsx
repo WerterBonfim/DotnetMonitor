@@ -4,7 +4,6 @@ import { Button } from '../../ui/button';
 import { Copy, Lightbulb, Trash2, Database } from 'lucide-react';
 import { toast } from '../../ui/toaster';
 import type { IndexRecommendation } from '../../../types/postgresql';
-import { cn } from '../../../lib/utils';
 
 interface RecommendationCardProps {
   recommendation: IndexRecommendation;

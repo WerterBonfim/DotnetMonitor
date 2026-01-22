@@ -31,7 +31,7 @@ export function GCDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-16">
       <div className="container mx-auto p-4">
         <div className="mb-4">
           <Button variant="outline" onClick={() => navigate('/')}>

@@ -11,7 +11,7 @@ import { toast } from '../ui/toaster';
 export function ConnectionsManager() {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
-  const [selectedConnection, setSelectedConnection] = useState<PostgresConnection | null>(null);
+  const [_selectedConnection, setSelectedConnection] = useState<PostgresConnection | null>(null);
 
   const { data: connections = [], isLoading } = useQuery({
     queryKey: ['postgresql-connections'],

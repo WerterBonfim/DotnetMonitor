@@ -6,7 +6,7 @@ import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { RefreshCw, Database, Lightbulb, Zap, Search, Table as TableIcon, Activity, Lock, HardDrive, History, AlertTriangle, Info, FileText, Eye } from 'lucide-react';
+import { RefreshCw, Database, Lightbulb, Zap, Search, Table as TableIcon, Activity, Lock, HardDrive, History, AlertTriangle, Info, FileText } from 'lucide-react';
 import { toast } from '../ui/toaster';
 import { MonitoringDashboard } from './monitoring/MonitoringDashboard';
 import { IndexStatsTable } from './monitoring/IndexStatsTable';
@@ -25,8 +25,6 @@ import { EfficiencyInfoButton } from './monitoring/EfficiencyInfoButton';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { QueryHistoryTable } from './monitoring/QueryHistoryTable';
 import { PostgresLogsViewer } from './monitoring/PostgresLogsViewer';
-import { TableDetailsModal } from './monitoring/TableDetailsModal';
-import { IndexTypesGuide } from './monitoring/IndexTypesGuide';
 import { formatBytes } from '../../lib/utils';
 
 interface MonitoringMetricsProps {

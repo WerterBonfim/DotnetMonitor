@@ -67,11 +67,10 @@ public static class IndexDetailsEndpoints
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error getting index details for connection {ConnectionId}, schema {Schema}, table {Table}, index {Index}", id, schema, table, index);
-                return Results.Problem(
-                    detail: ex.Message,
-                    statusCode: 500,
-                    title: "Erro ao obter detalhes do índice"
-                );
+                var detail = (ex.Message ?? "").Replace("\r", " ").Replace("\n", " ");
+                return Results.Json(
+                    new { title = "Erro ao obter detalhes do índice", detail, type = ex.GetType().Name },
+                    statusCode: 500);
             }
         })
         .WithName("GetIndexDetails");

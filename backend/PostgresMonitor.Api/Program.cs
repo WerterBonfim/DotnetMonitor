@@ -10,13 +10,33 @@ using PostgresMonitor.Api.Endpoints.GC.Processes;
 using PostgresMonitor.Api.Endpoints.GC.Metrics;
 using PostgresMonitor.Api.Endpoints.GC.HeapAnalysis;
 using PostgresMonitor.Api.Endpoints.GC.AllocationTracking;
+using PostgresMonitor.Api.Endpoints.BackendLogs;
 using PostgresMonitor.Infrastructure.Analysis;
+using PostgresMonitor.Infrastructure.Helpers;
 using PostgresMonitor.Infrastructure.LiteDb;
+using PostgresMonitor.Infrastructure.Logging;
 using PostgresMonitor.Infrastructure.PostgreSQL;
 using PostgresMonitor.Infrastructure.Repositories;
 using PostgresMonitor.Infrastructure.Services;
 
+// Ler porta da variável de ambiente ou usar padrão
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+var portNumber = int.Parse(port);
+
+// Verificar se a porta está disponível
+if (!PortHelper.IsPortAvailable(portNumber))
+{
+    Console.Error.WriteLine($"ERRO: A porta {port} já está em uso. Verifique se há outra instância do aplicativo rodando.");
+    Console.Error.WriteLine($"Tente usar uma porta diferente definindo a variável de ambiente PORT.");
+    Environment.Exit(1);
+}
+
+var urls = $"http://localhost:{port}";
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Configurar URL do servidor
+builder.WebHost.UseUrls(urls);
 
 builder.AddServiceDefaults();
 
@@ -54,7 +74,13 @@ builder.Services.AddScoped<MonitoringService>();
 builder.Services.AddScoped<HistoricalMetricsService>();
 builder.Services.AddScoped<QueryHistoryService>();
 
-builder.Services.AddLogging();
+// Logger provider customizado para armazenar logs em memória
+var loggerProvider = new InMemoryLoggerProvider(maxLogs: 500);
+builder.Services.AddSingleton(loggerProvider);
+builder.Services.AddLogging(loggingBuilder =>
+{
+    loggingBuilder.AddProvider(loggerProvider);
+});
 
 var app = builder.Build();
 
@@ -67,7 +93,20 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors();
-app.UseHttpsRedirection();
+// Desabilitar HTTPS redirection - o app Tauri usa HTTP local, não HTTPS
+// app.UseHttpsRedirection(); // Comentado para evitar redirecionamento em ambiente local
+
+app.UseExceptionHandler(appErr =>
+{
+    appErr.Run(async ctx =>
+    {
+        ctx.Response.StatusCode = 500;
+        ctx.Response.ContentType = "application/json; charset=utf-8";
+        var ex = ctx.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error;
+        var obj = new { title = "Erro interno", detail = ex?.Message ?? "Erro desconhecido", type = ex?.GetType().Name ?? "Unknown" };
+        await ctx.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(obj));
+    });
+});
 
 // Registrar endpoints por slice
 app.MapConnectionsEndpoints();
@@ -82,5 +121,6 @@ app.MapGCProcessesEndpoints();
 app.MapGCMetricsEndpoints();
 app.MapGCHeapAnalysisEndpoints();
 app.MapGCAllocationTrackingEndpoints();
+app.MapBackendLogsEndpoints();
 
 app.Run();

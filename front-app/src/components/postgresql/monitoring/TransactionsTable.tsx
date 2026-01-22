@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { Card } from '../../ui/card';
 import { Input } from '../../ui/input';
 import { Badge } from '../../ui/badge';
-import { Button } from '../../ui/button';
 import { Search, Clock, AlertTriangle } from 'lucide-react';
 import type { TransactionDetail } from '../../../types/postgresql';
 

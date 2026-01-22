@@ -215,18 +215,8 @@ export function GCFlowVisualization() {
     }
   };
 
-  const getGenerationInfo = (gen: 0 | 1 | 2 | 'LOH') => {
-    switch (gen) {
-      case 0:
-        return { name: 'Gen 0', color: 'bg-blue-500', description: 'Objetos recém-alocados' };
-      case 1:
-        return { name: 'Gen 1', color: 'bg-green-500', description: 'Sobreviveram Gen 0' };
-      case 2:
-        return { name: 'Gen 2', color: 'bg-yellow-500', description: 'Objetos de longa duração' };
-      case 'LOH':
-        return { name: 'LOH', color: 'bg-amber-500', description: 'Objetos >= 85KB' };
-    }
-  };
+  // Função não utilizada no momento, mas pode ser útil no futuro
+  // Removida para evitar erro de compilação
 
   const currentStepInfo = steps[currentStep];
   const canGoNext = stepOrder.indexOf(currentStep) < stepOrder.length - 1;

@@ -2,54 +2,76 @@ import axios, { AxiosError } from 'axios';
 import type { GCStats } from '../types/gc';
 import { toast } from '../components/ui/toaster';
 
+const apiBaseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+// #region agent log
+fetch('http://127.0.0.1:7246/ingest/94f82386-1b3b-4287-9cae-08e92f387d31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'gcApi.ts:6',message:'Criando apiClient',data:{baseURL:apiBaseURL,hasEnvVar:!!import.meta.env.VITE_API_BASE_URL},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+// #endregion
+
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5179',
+  baseURL: apiBaseURL,
   headers: {
     'Content-Type': 'application/json',
   },
   timeout: 30000, // 30 segundos
 });
 
-// Interceptor para capturar erros de conexão com MongoDB
+// Interceptor para capturar erros de conexão
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     const errorData = error.response?.data as any;
-    const errorMessage = errorData?.message || errorData?.detail || error.message || '';
     const errorString = JSON.stringify(errorData || error.message || '').toLowerCase();
 
-    // Verifica se é erro de timeout ou conexão relacionado ao MongoDB
+    // Verifica se é erro de timeout
     const isTimeoutError = 
       error.code === 'ECONNABORTED' || 
       error.code === 'ETIMEDOUT' || 
       error.message?.toLowerCase().includes('timeout') ||
       errorString.includes('timeoutexception');
 
-    const isMongoDBError = 
-      errorString.includes('mongodb') ||
-      errorString.includes('mongo') ||
-      errorString.includes('compositeserverselector') ||
-      errorString.includes('cluster state') ||
-      errorString.includes('server selector');
+    // Verifica se é erro relacionado ao LiteDB
+    const isLiteDBError = 
+      errorString.includes('litedb') ||
+      errorString.includes('lite db') ||
+      errorString.includes('database locked');
 
-    if (isTimeoutError || isMongoDBError) {
+    // Verificar se é erro de porta em uso
+    const portInUseError = 
+      errorString.includes('port') && 
+      (errorString.includes('already in use') || 
+       errorString.includes('já está em uso') ||
+       errorString.includes('address already in use'));
+
+    if (portInUseError) {
+      const port = import.meta.env.VITE_API_BASE_URL?.match(/:(\d+)/)?.[1] || '5000';
       toast({
-        title: 'Erro de Conexão com MongoDB',
-        description: 'Não foi possível conectar ao banco de dados MongoDB para obter as credenciais e outras informações. Verifique se o MongoDB está rodando e acessível.',
+        title: 'Porta em Uso',
+        description: `A porta ${port} já está sendo usada. Verifique se há outra instância do aplicativo rodando ou use uma porta diferente.`,
+        variant: 'destructive',
+        duration: 10000,
+      });
+    } else if (isTimeoutError) {
+      toast({
+        title: 'Erro de Timeout',
+        description: 'A requisição demorou muito para responder. Verifique se o backend está rodando corretamente.',
         variant: 'destructive',
         duration: 10000,
       });
     } else if (error.code === 'ECONNREFUSED' || error.message?.includes('Network Error')) {
+      // #region agent log
+      fetch('http://127.0.0.1:7246/ingest/94f82386-1b3b-4287-9cae-08e92f387d31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'gcApi.ts:56',message:'Erro de conexão detectado',data:{code:error.code,message:error.message,baseURL:apiBaseURL,url:error.config?.url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+      // #endregion
       toast({
         title: 'Erro de Conexão',
-        description: 'Não foi possível conectar ao servidor. Verifique se o backend está rodando e se o MongoDB está acessível.',
+        description: 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.',
         variant: 'destructive',
         duration: 8000,
       });
-    } else if (error.response?.status === 500 && isMongoDBError) {
+    } else if (error.response?.status === 500 && isLiteDBError) {
       toast({
         title: 'Erro no Banco de Dados',
-        description: 'Não foi possível conectar ao banco de dados MongoDB. Verifique se o MongoDB está rodando e configurado corretamente.',
+        description: 'Não foi possível acessar o banco de dados LiteDB. Verifique as permissões do arquivo de banco de dados.',
         variant: 'destructive',
         duration: 8000,
       });
@@ -68,8 +90,21 @@ export interface DotNetProcess {
 }
 
 export async function getDotNetProcesses(): Promise<DotNetProcess[]> {
-  const response = await apiClient.get<DotNetProcess[]>('/api/gc/processes');
-  return response.data;
+  // #region agent log
+  fetch('http://127.0.0.1:7246/ingest/94f82386-1b3b-4287-9cae-08e92f387d31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'gcApi.ts:getDotNetProcesses',message:'Iniciando requisição getDotNetProcesses',data:{baseURL:apiBaseURL,url:'/api/gc/processes'},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'D'})}).catch(()=>{});
+  // #endregion
+  try {
+    const response = await apiClient.get<DotNetProcess[]>('/api/gc/processes');
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/94f82386-1b3b-4287-9cae-08e92f387d31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'gcApi.ts:getDotNetProcesses',message:'Requisição getDotNetProcesses bem-sucedida',data:{status:response.status,dataLength:response.data?.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
+    return response.data;
+  } catch (error) {
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/94f82386-1b3b-4287-9cae-08e92f387d31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'gcApi.ts:getDotNetProcesses',message:'Erro em getDotNetProcesses',data:{error:error instanceof Error?error.message:String(error),code:(error as any)?.code},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
+    throw error;
+  }
 }
 
 export async function getGCMetrics(processId: number): Promise<GCStats> {

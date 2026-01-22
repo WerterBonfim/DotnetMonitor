@@ -6,7 +6,7 @@ export function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 pb-20">
       <div className="max-w-4xl w-full space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-bold">Dotnet Monitor</h1>

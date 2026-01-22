@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { cn } from '../../lib/utils';
 import { X, AlertCircle, CheckCircle, Info } from 'lucide-react';
 
@@ -10,7 +9,7 @@ export interface ToastProps {
   onClose?: () => void;
 }
 
-export function Toast({ id, title, description, variant = 'default', onClose }: ToastProps) {
+export function Toast({ title, description, variant = 'default', onClose }: ToastProps) {
   const icons = {
     default: <Info className="h-5 w-5" />,
     destructive: <AlertCircle className="h-5 w-5" />,
